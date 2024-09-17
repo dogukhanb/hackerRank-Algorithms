@@ -105,13 +105,13 @@ function readLine() {
  *  2. INTEGER p
  */
 function pageCount(n, p) {
-    // Turns from the front
+    // Calculate the number of turns from the front
     const fromFront = Math.floor(p / 2);
     
-    // Turns from the back
-    const fromBack = Math.floor((n - p) / 2);
+    // Calculate the number of turns from the back
+    const fromBack = Math.floor((n / 2) - (p / 2));
     
-    // Return the minimum of both
+    // Return the minimum of the two
     return Math.min(fromFront, fromBack);
 }
 
