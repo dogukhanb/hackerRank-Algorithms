@@ -104,21 +104,23 @@ function readLine() {
  *  1. INTEGER n
  *  2. INTEGER p
  */
+
 function pageCount(n, p) {
-    // Calculate the number of turns from the front
-    const fromFront = Math.floor(p / 2);
+    // Number of turns from the front
+    const front_turns = Math.floor(p / 2);
     
-    // Calculate the number of turns from the back
-    const fromBack = Math.floor((n / 2) - (p / 2));
+    // Number of turns from the back
+    const back_turns = Math.floor(n / 2) - Math.floor(p / 2);
     
-    // Return the minimum of the two
-    return Math.min(fromFront, fromBack);
+    // Return the minimum of both values
+    return Math.min(front_turns, back_turns);
 }
 
 function main() {
     const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
 
     const n = parseInt(readLine().trim(), 10);
+
     const p = parseInt(readLine().trim(), 10);
 
     const result = pageCount(n, p);

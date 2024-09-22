@@ -76,12 +76,15 @@ process.stdin.setEncoding('utf-8');
 let inputString = '';
 let currentLine = 0;
 
-process.stdin.on('data', function(inputStdin) {
+process.stdin.on('data', inputStdin => {
     inputString += inputStdin;
 });
 
-process.stdin.on('end', function() {
-    inputString = inputString.split('\n');
+process.stdin.on('end', _ => {
+    inputString = inputString.replace(/\s*$/, '')
+        .split('\n')
+        .map(str => str.replace(/\s*$/, ''));
+
     main();
 });
 
@@ -89,33 +92,26 @@ function readLine() {
     return inputString[currentLine++];
 }
 
-/*
- * Complete the 'flatlandSpaceStations' function below.
- *
- * The function is expected to return an INTEGER.
- * The function accepts following parameters:
- *  1. INTEGER n
- *  2. INTEGER_ARRAY c
- */
+// Complete the flatlandSpaceStations function below.
 function flatlandSpaceStations(n, c) {
-    // Sort the space station indices
+    // Sort the array of cities with space stations
     c.sort((a, b) => a - b);
-
+    
     let maxDistance = 0;
 
-    // Calculate distance before the first space station
-    maxDistance = Math.max(maxDistance, c[0]);
-
-    // Calculate distance after the last space station
-    maxDistance = Math.max(maxDistance, n - 1 - c[c.length - 1]);
-
-    // Calculate the distance between consecutive space stations
+    // Check the distance from the first city to the first space station
+    maxDistance = Math.max(maxDistance, c[0] - 0);
+    
+    // Check the distances between consecutive space stations
     for (let i = 1; i < c.length; i++) {
-        let distanceBetweenStations = Math.floor((c[i] - c[i - 1]) / 2);
-        maxDistance = Math.max(maxDistance, distanceBetweenStations);
+        const distance = (c[i] - c[i - 1]) / 2;
+        maxDistance = Math.max(maxDistance, distance);
     }
 
-    return maxDistance;
+    // Check the distance from the last space station to the last city
+    maxDistance = Math.max(maxDistance, n - 1 - c[c.length - 1]);
+
+    return Math.floor(maxDistance);
 }
 
 function main() {
@@ -124,12 +120,11 @@ function main() {
     const nm = readLine().split(' ');
 
     const n = parseInt(nm[0], 10);
-
     const m = parseInt(nm[1], 10);
 
     const c = readLine().split(' ').map(cTemp => parseInt(cTemp, 10));
 
-    const result = flatlandSpaceStations(n, c);
+    let result = flatlandSpaceStations(n, c);
 
     ws.write(result + "\n");
 

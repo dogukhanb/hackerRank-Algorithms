@@ -55,9 +55,6 @@ Calculating topics known for all permutations of 2 attendees we get:
 The 2 teams (1, 3) and (3, 4) know all 5 topics which is maximal.
 
 /* ---------------------------------------------------------- */
-
-'use strict';
-
 'use strict';
 
 const fs = require('fs');
@@ -87,30 +84,33 @@ function readLine() {
  * The function is expected to return an INTEGER_ARRAY.
  * The function accepts STRING_ARRAY topic as parameter.
  */
+
 function acmTeam(topic) {
-    const n = topic.length;
-    const m = topic[0].length;
-    
     let maxTopics = 0;
-    let maxCount = 0;
-    
-    for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-            // Compute combined knowledge
-            const combinedKnowledge = (parseInt(topic[i], 2) | parseInt(topic[j], 2)).toString(2);
-            // Count number of '1's in the combined knowledge
-            const count = combinedKnowledge.split('1').length - 1;
+    let maxTeams = 0;
+
+    // Iterate over all pairs of people
+    for (let i = 0; i < topic.length - 1; i++) {
+        for (let j = i + 1; j < topic.length; j++) {
+            // Combine the topics known by both people
+            let combinedTopics = 0;
+            for (let k = 0; k < topic[i].length; k++) {
+                if (topic[i][k] === '1' || topic[j][k] === '1') {
+                    combinedTopics++;
+                }
+            }
             
-            if (count > maxTopics) {
-                maxTopics = count;
-                maxCount = 1;
-            } else if (count === maxTopics) {
-                maxCount++;
+            // Update maxTopics and maxTeams
+            if (combinedTopics > maxTopics) {
+                maxTopics = combinedTopics;
+                maxTeams = 1;
+            } else if (combinedTopics === maxTopics) {
+                maxTeams++;
             }
         }
     }
-    
-    return [maxTopics, maxCount];
+
+    return [maxTopics, maxTeams];
 }
 
 function main() {

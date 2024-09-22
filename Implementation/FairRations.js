@@ -91,48 +91,42 @@ function readLine() {
  * The function is expected to return a STRING.
  * The function accepts INTEGER_ARRAY B as parameter.
  */
+
 function fairRations(B) {
-    // Calculate the total number of loaves
-    const totalSum = B.reduce((acc, cur) => acc + cur, 0);
-    
-    // If the total number of loaves is odd, it's impossible to make all even
-    if (totalSum % 2 !== 0) {
+    let totalLoaves = 0;
+    const n = B.length;
+
+    // Check if all people can potentially have even loaves
+    if (B.reduce((a, b) => a + b) % 2 !== 0) {
         return 'NO';
     }
-    
-    // Calculate the number of operations required
-    let operations = 0;
-    let oddCount = 0;
 
-    // Traverse through the list to find segments of odd counts
-    for (let i = 0; i < B.length; i++) {
+    for (let i = 0; i < n - 1; i++) {
+        // If current person has an odd number of loaves, give to this and the next person
         if (B[i] % 2 !== 0) {
-            oddCount++;
+            B[i]++;
+            B[i + 1]++;
+            totalLoaves += 2;
         }
     }
 
-    // We need to make all odd counts even
-    if (oddCount % 2 !== 0) {
+    // After processing, check if the last person has even loaves
+    if (B[n - 1] % 2 !== 0) {
         return 'NO';
     }
 
-    // The number of operations needed is twice the number of odd pairs
-    // Each pair will need 2 operations (one for each)
-    operations = (oddCount / 2) * 2;
-
-    return operations.toString();
+    return totalLoaves.toString();
 }
 
 function main() {
     const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
 
     const N = parseInt(readLine().trim(), 10);
-
     const B = readLine().replace(/\s+$/g, '').split(' ').map(BTemp => parseInt(BTemp, 10));
 
     const result = fairRations(B);
 
     ws.write(result + '\n');
-
     ws.end();
 }
+

@@ -71,6 +71,8 @@ NO
 
 'use strict';
 
+const fs = require('fs');
+
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
 
@@ -96,37 +98,33 @@ function readLine() {
  * The function accepts STRING s as parameter.
  */
 function separateNumbers(s) {
-    let len = s.length;
-    let found = false;
-    
+    const len = s.length;
+
     // Check all possible lengths for the initial number
     for (let i = 1; i <= Math.floor(len / 2); i++) {
         let startNumber = s.slice(0, i);
         
-        // Skip if start number has leading zero
-        if (startNumber[0] === '0') {
+        // Skip if start number has leading zero and is more than one digit
+        if (startNumber[0] === '0' && startNumber.length > 1) {
             continue;
         }
-        
+
         let sequence = '';
-        let num = parseInt(startNumber);
+        let num = BigInt(startNumber); // Use BigInt to handle large numbers
         
         // Generate the expected sequence
         while (sequence.length < len) {
-            sequence += num;
+            sequence += num.toString();
             num++;
         }
-        
+
         if (sequence === s) {
             console.log(`YES ${startNumber}`);
-            found = true;
-            break;
+            return; // Found a beautiful number, exit the function
         }
     }
-    
-    if (!found) {
-        console.log('NO');
-    }
+
+    console.log('NO'); // No beautiful number found
 }
 
 function main() {

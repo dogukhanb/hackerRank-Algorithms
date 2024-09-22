@@ -58,31 +58,31 @@ The corrected code returns the sorted array
 
 /* ------------------------------------------------------------ */
 
-function insertionSort(arr) {
-    // Outer loop: Start from the second element and go to the end
-    for (let i = 1; i < arr.length; i++) {
-        let value = arr[i]; // The element to be inserted
+function insertionSort(ar) {
+    for (let i = 1; i < ar.length; i++) {
+        let value = ar[i];
         let j = i - 1;
-        
-        // Inner loop: Shift elements greater than 'value' to the right
-        while (j >= 0 && arr[j] > value) {
-            arr[j + 1] = arr[j]; // Shift element right
+
+        // Move elements of ar[0..i-1], that are greater than value, to one position ahead of their current position
+        while (j >= 0 && ar[j] > value) {
+            ar[j + 1] = ar[j];
             j--;
         }
-        
-        // Insert the 'value' at the correct position
-        arr[j + 1] = value;
+        ar[j + 1] = value;
     }
-    
-    // After sorting, output the entire array in space-separated format
-    console.log(arr.join(' '));
+    return ar;
 }
 
-// Example of reading input (manually here for demonstration)
-const input = `6\n4 1 3 5 6 2`;  // Sample input
-const inputArray = input.split('\n');
-const n = parseInt(inputArray[0], 10);
-const arr = inputArray[1].split(' ').map(Number);
+function main() {
+    const input = require('fs').readFileSync('/dev/stdin', 'utf-8').trim().split('\n');
+    const n = parseInt(input[0].trim(), 10);
+    const ar = input[1].trim().split(' ').map(Number);
 
-// Call the insertion sort function
-insertionSort(arr);
+    const sortedArray = insertionSort(ar);
+    
+    // Print the sorted array as a space-separated string
+    console.log(sortedArray.join(' '));
+}
+
+// Call the main function to execute the code
+main();
