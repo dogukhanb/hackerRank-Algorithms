@@ -56,3 +56,48 @@ In every possible move of first player we see that the last stone is picked by h
 
 /* ----------------------------------------------- */
 
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+ * Complete the 'misereNim' function below.
+ *
+ * The function is expected to return a STRING.
+ * The function accepts INTEGER_ARRAY s as parameter.
+ */
+
+string misereNim(vector<int> s) {
+    int n = s.size();
+    bool allOnes = true;  // Check if all piles have exactly 1 stone
+    int xorSum = 0;
+    
+    for (int stones : s) {
+        xorSum ^= stones;
+        if (stones > 1) {
+            allOnes = false;  // If we find any pile with more than 1 stone
+        }
+    }
+    
+    // Case 1: All piles have exactly 1 stone
+    if (allOnes) {
+        return (n % 2 == 0) ? "First" : "Second";
+    }
+    
+    // Case 2: General case (some piles have more than 1 stone)
+    return (xorSum == 0) ? "Second" : "First";
+}
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        cin >> n;
+        vector<int> s(n);
+        for (int i = 0; i < n; i++) {
+            cin >> s[i];
+        }
+        cout << misereNim(s) << endl;
+    }
+    return 0;
+}
