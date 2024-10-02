@@ -47,6 +47,70 @@ None of the rear faces are exposed.
 The underside is 3 units.
 The front row contributes 4 + 3 + 4 + 3 = 14 units to the surface area.
 
-/* ------------------------------------------------- */
+/* ------------------------------------------------ */
 
 
+#include <bits/stdc++.h>
+using namespace std;
+
+
+int surfaceArea(vector<vector<int>> A) {
+    int H = A.size();
+    int W = A[0].size();
+    int totalSurfaceArea = 0;
+
+    for (int i = 0; i < H; ++i) {
+        for (int j = 0; j < W; ++j) {
+            
+            totalSurfaceArea += 2; 
+    
+            
+            if (j == 0) {
+                totalSurfaceArea += A[i][j];
+            } else {
+                totalSurfaceArea += max(0, A[i][j] - A[i][j-1]);
+            }
+            
+            
+            if (j == W-1) {
+                totalSurfaceArea += A[i][j];
+            } else {
+                totalSurfaceArea += max(0, A[i][j] - A[i][j+1]);
+            }
+            
+            
+            if (i == 0) {
+                totalSurfaceArea += A[i][j];
+            } else {
+                totalSurfaceArea += max(0, A[i][j] - A[i-1][j]);
+            }
+            
+            
+            if (i == H-1) {
+                totalSurfaceArea += A[i][j];
+            } else {
+                totalSurfaceArea += max(0, A[i][j] - A[i+1][j]);
+            }
+        }
+    }
+    
+    return totalSurfaceArea;
+}
+
+int main() {
+    int H, W;
+    cin >> H >> W;
+    vector<vector<int>> A(H, vector<int>(W));
+
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            cin >> A[i][j];
+        }
+    }
+
+    int result = surfaceArea(A);
+
+    cout << result << endl;
+
+    return 0;
+}
