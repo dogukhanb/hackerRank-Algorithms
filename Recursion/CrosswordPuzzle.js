@@ -115,162 +115,161 @@ Sample Output 2
 ++++++++Y+
 
  /* ----------------------------------- */
-
  'use strict';
 
-const fs = require('fs');
-
-process.stdin.resume();
-process.stdin.setEncoding('utf-8');
-
-let inputString = '';
-let currentLine = 0;
-
-process.stdin.on('data', function(inputStdin) {
-    inputString += inputStdin;
-});
-
-process.stdin.on('end', function() {
-    inputString = inputString.split('\n');
-
-    main();
-});
-
-function readLine() {
-    return inputString[currentLine++];
-}
-
-/*
- * Complete the 'crosswordPuzzle' function below.
- *
- * The function is expected to return a STRING_ARRAY.
- * The function accepts following parameters:
- *  1. STRING_ARRAY crossword
- *  2. STRING words
- */
-
-function crosswordPuzzle(crossword, words) {
-    const wordList = words.split(';');
-    const gridSize = crossword.length;
-
-    // To hold positions to fill in the crossword
-    let positions = [];
-
-    // Step 1: Find all horizontal and vertical positions
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            // Check for horizontal
-            if (crossword[i][j] === '-') {
-                let start = j;
-                while (j < gridSize && crossword[i][j] === '-') {
-                    j++;
-                }
-                if (j - start > 1) { // Valid position for a word
-                    positions.push({ start: [i, start], length: j - start, orientation: 'H' });
-                }
-            }
-        }
-    }
-
-    for (let j = 0; j < gridSize; j++) {
-        for (let i = 0; i < gridSize; i++) {
-            // Check for vertical
-            if (crossword[i][j] === '-') {
-                let start = i;
-                while (i < gridSize && crossword[i][j] === '-') {
-                    i++;
-                }
-                if (i - start > 1) { // Valid position for a word
-                    positions.push({ start: [start, j], length: i - start, orientation: 'V' });
-                }
-            }
-        }
-    }
-
-    // Step 2: Try to fit words into the positions
-    const fillCrossword = (index) => {
-        if (index === positions.length) {
-            return true; // All positions filled
-        }
-
-        const { start, length, orientation } = positions[index];
-
-        for (const word of wordList) {
-            if (word.length === length) {
-                // Check if the word can fit in the crossword
-                if (canPlaceWord(crossword, word, start, orientation)) {
-                    placeWord(crossword, word, start, orientation); // Place the word
-
-                    if (fillCrossword(index + 1)) {
-                        return true; // Move to next position
-                    }
-
-                    removeWord(crossword, word, start, orientation); // Backtrack
-                }
-            }
-        }
-        return false; // No valid placement found
-    };
-
-    fillCrossword(0);
-    return crossword; // Return the filled crossword
-}
-
-// Helper function to check if a word can be placed
-function canPlaceWord(crossword, word, start, orientation) {
-    const [row, col] = start;
-    const length = word.length;
-
-    for (let i = 0; i < length; i++) {
-        const r = orientation === 'H' ? row : row + i;
-        const c = orientation === 'H' ? col + i : col;
-
-        if (crossword[r][c] !== '-' && crossword[r][c] !== word[i]) {
-            return false; // Conflict with existing character
-        }
-    }
-    return true; // No conflicts
-}
-
-// Helper function to place a word
-function placeWord(crossword, word, start, orientation) {
-    const [row, col] = start;
-
-    for (let i = 0; i < word.length; i++) {
-        const r = orientation === 'H' ? row : row + i;
-        const c = orientation === 'H' ? col + i : col;
-
-        crossword[r] = crossword[r].substring(0, c) + word[i] + crossword[r].substring(c + 1);
-    }
-}
-
-// Helper function to remove a word
-function removeWord(crossword, word, start, orientation) {
-    const [row, col] = start;
-
-    for (let i = 0; i < word.length; i++) {
-        const r = orientation === 'H' ? row : row + i;
-        const c = orientation === 'H' ? col + i : col;
-
-        crossword[r] = crossword[r].substring(0, c) + '-' + crossword[r].substring(c + 1);
-    }
-}
-
-function main() {
-    const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
-
-    let crossword = [];
-
-    for (let i = 0; i < 10; i++) {
-        const crosswordItem = readLine();
-        crossword.push(crosswordItem);
-    }
-
-    const words = readLine();
-
-    const result = crosswordPuzzle(crossword, words);
-
-    ws.write(result.join('\n') + '\n');
-
-    ws.end();
-}
+ const fs = require('fs');
+ 
+ process.stdin.resume();
+ process.stdin.setEncoding('utf-8');
+ 
+ let inputString = '';
+ let currentLine = 0;
+ 
+ process.stdin.on('data', function(inputStdin) {
+     inputString += inputStdin;
+ });
+ 
+ process.stdin.on('end', function() {
+     inputString = inputString.split('\n');
+     main();
+ });
+ 
+ function readLine() {
+     return inputString[currentLine++];
+ }
+ 
+ /*
+  * Complete the 'crosswordPuzzle' function below.
+  *
+  * The function is expected to return a STRING_ARRAY.
+  * The function accepts following parameters:
+  *  1. STRING_ARRAY crossword
+  *  2. STRING words
+  */
+ 
+ function crosswordPuzzle(crossword, words) {
+     const wordList = words.split(';');
+     const grid = crossword.map(row => row.split(''));
+     const slots = [];
+ 
+     // Find horizontal and vertical slots
+     function findSlots() {
+         for (let r = 0; r < grid.length; r++) {
+             let start = -1;
+             for (let c = 0; c < grid[r].length; c++) {
+                 if (grid[r][c] === '-') {
+                     if (start === -1) start = c; // Start of a slot
+                 } else {
+                     if (start !== -1) {
+                         if (c - start > 1) {
+                             slots.push({ start: [r, start], length: c - start, isHorizontal: true });
+                         }
+                         start = -1; // Reset start
+                     }
+                 }
+             }
+             // Check for open slot at the end
+             if (start !== -1 && grid[r].length - start > 1) {
+                 slots.push({ start: [r, start], length: grid[r].length - start, isHorizontal: true });
+             }
+         }
+ 
+         // Vertical slots
+         for (let c = 0; c < grid[0].length; c++) {
+             let start = -1;
+             for (let r = 0; r < grid.length; r++) {
+                 if (grid[r][c] === '-') {
+                     if (start === -1) start = r; // Start of a slot
+                 } else {
+                     if (start !== -1) {
+                         if (r - start > 1) {
+                             slots.push({ start: [start, c], length: r - start, isHorizontal: false });
+                         }
+                         start = -1; // Reset start
+                     }
+                 }
+             }
+             // Check for open slot at the end
+             if (start !== -1 && grid.length - start > 1) {
+                 slots.push({ start: [start, c], length: grid.length - start, isHorizontal: false });
+             }
+         }
+     }
+ 
+     // Check if the word can fit in the given slot
+     function canPlace(word, slot) {
+         const [row, col] = slot.start;
+         if (slot.length !== word.length) return false; // Length mismatch
+         for (let i = 0; i < word.length; i++) {
+             const cell = slot.isHorizontal ? grid[row][col + i] : grid[row + i][col];
+             if (cell !== '-' && cell !== word[i]) {
+                 return false; // Blocked or conflicting character
+             }
+         }
+         return true;
+     }
+ 
+     // Place the word in the slot
+     function placeWord(word, slot) {
+         const [row, col] = slot.start;
+         for (let i = 0; i < word.length; i++) {
+             if (slot.isHorizontal) {
+                 grid[row][col + i] = word[i];
+             } else {
+                 grid[row + i][col] = word[i];
+             }
+         }
+     }
+ 
+     // Remove the word from the slot (backtrack)
+     function removeWord(word, slot) {
+         const [row, col] = slot.start;
+         for (let i = 0; i < word.length; i++) {
+             if (slot.isHorizontal) {
+                 grid[row][col + i] = '-';
+             } else {
+                 grid[row + i][col] = '-';
+             }
+         }
+     }
+ 
+     // Recursive backtracking to place all words
+     function backtrack(wordIndex) {
+         if (wordIndex === wordList.length) {
+             return true; // All words placed successfully
+         }
+ 
+         const word = wordList[wordIndex];
+         for (let slot of slots) {
+             if (canPlace(word, slot)) {
+                 placeWord(word, slot);
+                 if (backtrack(wordIndex + 1)) {
+                     return true;
+                 }
+                 removeWord(word, slot); // Backtrack
+             }
+         }
+         return false; // No valid placement found
+     }
+ 
+     findSlots();
+     backtrack(0);
+    
+     return grid.map(row => row.join(''));
+ }
+ 
+ function main() {
+     const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+     let crossword = [];
+ 
+     for (let i = 0; i < 10; i++) {
+         const crosswordItem = readLine();
+         crossword.push(crosswordItem);
+     }
+ 
+     const words = readLine();
+     const result = crosswordPuzzle(crossword, words);
+     ws.write(result.join('\n') + '\n');
+     ws.end();
+ }
+ 
